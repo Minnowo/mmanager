@@ -1,3 +1,4 @@
+from genericpath import isfile
 import os 
 import hashlib
 import subprocess
@@ -5,6 +6,9 @@ import shutil
 import urllib.parse
 from re import compile
 from . import const 
+
+import webbrowser
+
 
 DIGIT              = compile(r"([0-9]+)")
 BASIC_HTTP_CHECK   = compile(r"(https?://)(.+)")
@@ -19,6 +23,32 @@ def create_directory_from_file_name(path : str) -> bool:
     """    Creates a directory from the file path.    """
     return create_directory(os.path.dirname(path))
 
+def unlock_path_length_limit_windows(path):
+
+    if const.WINDOWS and not path.startswith("\\\\?\\"):
+
+        return "\\\\?\\" + os.path.abspath(path)
+
+    return path
+
+def copy_file(patha, pathb, medadata=True):
+    
+    if not patha or not pathb:
+
+        raise Exception("Copy must not be empty paths")
+
+    patha = unlock_path_length_limit_windows(patha)
+
+    pathb = unlock_path_length_limit_windows(pathb)
+
+    create_directory_from_file_name(pathb)
+
+    if medadata:
+        shutil.copy2(patha, pathb)
+
+    else: 
+        # faster but no metadata 
+        shutil.copy(patha, pathb)
 
 
 def create_directory(path : str) -> bool:
@@ -75,6 +105,9 @@ def iter_file(file, chunk_size : int = 262144): # 256kb
         
         next_block = file.read(chunk_size)
 
+
+def clear_console():
+    os.system('cls' if const.WINDOWS else 'clear') 
 
 
 async def iter_file_async(file, chunk_size : int = 262144): # 256kb 
@@ -273,3 +306,16 @@ def non_failing_unicode_decode( data, encoding ):
     
     return ( text, encoding )
     
+
+
+def open_file_location(path):
+
+    if os.path.isfile(path):
+
+        path = os.path.dirname(path)
+
+    if const.WINDOWS:
+        os.startfile(path)
+        return  
+
+    webbrowser.open('file:///' + path)

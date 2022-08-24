@@ -1,6 +1,7 @@
 *.db 
 manager/files/
 manager/dl/
+manager/export/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

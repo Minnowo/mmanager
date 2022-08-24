@@ -201,3 +201,17 @@ def get_files_from_url_id(url_id):
     for row in inst.cursor.fetchall():
 
         yield row 
+
+
+def get_filename(hash_id):
+
+    inst = db_instance.get_instance()
+    inst.cursor.execute("SELECT filename FROM tbl_hash_filename WHERE hash_id=?", (hash_id,))
+    
+    row = inst.cursor.fetchone()
+
+    if row:
+
+        return row[0]
+
+    return None 

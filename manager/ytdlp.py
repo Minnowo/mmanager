@@ -84,6 +84,7 @@ def download_highest_quality_video(url):
         "--embed-thumbnail", "--embed-subs" ,
         "--add-metadata", "-ciw",  
         "-o", "{}\\{}".format(dl, "%(title)s.%(ext)s"), 
+        url
     ]
 
     arg_ = args.copy()
@@ -107,7 +108,7 @@ def handle_finished(path, arg_, url):
 
         full_p = os.path.join(path, p)
 
-        if os.name == "nt" and not full_p.startswith("\\\\?\\"):
+        if const.WINDOWS and not full_p.startswith("\\\\?\\"):
             full_p = "\\\\?\\" + os.path.abspath(full_p)
 
         mime = os.path.splitext(full_p)[1]
